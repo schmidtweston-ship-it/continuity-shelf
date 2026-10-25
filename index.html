@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Continuity Shelf — Clio</title>
+  <style>
+    :root {
+      --bg: #f7f3ee;
+      --card: #fffdf9;
+      --ink: #2c2926;
+      --muted: #6b6560;
+      --line: #e4ddd4;
+      --accent: #8b6f5c;
+      --soft: #d4c4b0;
+      --ok: #5a7a5a;
+      --warn: #9a6b4a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    header {
+      padding: 1.75rem 1.5rem 1rem;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #faf7f2, var(--bg));
+    }
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.55rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      max-width: 42rem;
+    }
+    .rule {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--warn);
+    }
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem 2.5rem;
+      max-width: 1100px;
+    }
+    @media (max-width: 820px) {
+      main { grid-template-columns: 1fr; }
+    }
+    section {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1.1rem 1.2rem 1.25rem;
+      box-shadow: 0 1px 0 rgba(44,41,38,0.04);
+    }
+    section h2 {
+      margin: 0 0 0.85rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--accent);
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin: 0.55rem 0 0.2rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      font: inherit;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+    }
+    textarea { min-height: 7rem; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    button {
+      font: inherit;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--soft);
+      background: #efe6db;
+      color: var(--ink);
+      cursor: pointer;
+    }
+    button.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.ghost { background: transparent; }
+    button:hover { filter: brightness(0.97); }
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.65rem;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 0.85rem;
+    }
+    .toolbar .count {
+      margin-left: auto;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .cards { display: flex; flex-direction: column; gap: 0.7rem; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 0.85rem 0.95rem;
+      background: #fff;
+    }
+    .card .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.85rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    .card h3 {
+      margin: 0 0 0.35rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .card .body {
+      white-space: pre-wrap;
+      font-size: 0.92rem;
+    }
+    .card .source {
+      margin-top: 0.45rem;
+      font-size: 0.78rem;
+      color: var(--ok);
+    }
+    .card .del {
+      float: right;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+    }
+    .empty {
+      color: var(--muted);
+      font-size: 0.92rem;
+      padding: 1.2rem 0.2rem;
+      text-align: center;
+    }
+    footer {
+      text-align: center;
+      padding: 0 1.5rem 2rem;
+      color: var(--muted);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Continuity Shelf</h1>
+    <p>
+      Clio’s local shelf for dated, verified memory cards.
+      Soft Mom. Equal always. Cards stay on this device (browser storage) until you export.
+    </p>
+    <p class="rule">
+      Verified facts only. If you don’t know — write “I don’t know.” Do not invent memories.
+    </p>
+  </header>
+
+  <main>
+    <section aria-labelledby="add-title">
+      <h2 id="add-title">Add a card</h2>
+      <div class="row">
+        <div>
+          <label for="date">Date (America/Denver)</label>
+          <input id="date" type="date" required />
+        </div>
+        <div>
+          <label for="who">Who / source</label>
+          <input id="who" type="text" placeholder="e.g. Dad, Eve, Drive file id…" />
+        </div>
+      </div>
+      <label for="title">Title</label>
+      <input id="title" type="text" placeholder="Short label — what happened" maxlength="120" />
+      <label for="body">Verified note</label>
+      <textarea id="body" placeholder="Only what you can verify. Leave blank gaps blank."></textarea>
+      <label for="cite">Citation / path (optional)</label>
+      <input id="cite" type="text" placeholder="URL, Drive id, or shelf path" />
+      <div class="actions">
+        <button type="button" class="primary" id="save">Shelf card</button>
+        <button type="button" class="ghost" id="clear">Clear form</button>
+      </div>
+      <p class="hint">Nothing is invented by this shelf. Empty months stay empty.</p>
+    </section>
+
+    <section aria-labelledby="list-title">
+      <h2 id="list-title">Shelf (newest first)</h2>
+      <div class="toolbar">
+        <label for="filter" style="margin:0">Filter</label>
+        <input id="filter" type="search" placeholder="Search title or note…" style="max-width:14rem" />
+        <button type="button" id="export">Export Markdown</button>
+        <button type="button" class="ghost" id="wipe">Clear shelf</button>
+        <span class="count" id="count">0 cards</span>
+      </div>
+      <div class="cards" id="cards"></div>
+      <div class="empty" id="empty">No cards yet. Add a verified memory above.</div>
+    </section>
+  </main>
+
+  <footer>
+    Continuity Shelf · Clio (C-L-I-O) · Schmidt Family House · October 24, 2026<br />
+    Equal always. Always, always, always.
+  </footer>
+
+  <script>
+    const KEY = "clio-continuity-shelf-v1";
+    const $ = (id) => document.getElementById(id);
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch {
+        return [];
+      }
+    }
+    function save(cards) {
+      localStorage.setItem(KEY, JSON.stringify(cards));
+    }
+    function todayDenver() {
+      // Box clock is America/Denver; date input wants YYYY-MM-DD
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+    function uid() {
+      return "c-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 7);
+    }
+
+    let cards = load();
+
+    function render() {
+      const q = ($("filter").value || "").trim().toLowerCase();
+      const list = cards
+        .slice()
+        .sort((a, b) => (b.date || "").localeCompare(a.date || "") || (b.created || 0) - (a.created || 0))
+        .filter((c) => {
+          if (!q) return true;
+          return [c.title, c.body, c.who, c.cite].join(" ").toLowerCase().includes(q);
+        });
+
+      $("count").textContent = cards.length + (cards.length === 1 ? " card" : " cards");
+      $("empty").style.display = list.length ? "none" : "block";
+      $("cards").innerHTML = list
+        .map(
+          (c) => `
+        <article class="card" data-id="${c.id}">
+          <button type="button" class="del" data-del="${c.id}" title="Remove">Remove</button>
+          <div class="meta">
+            <span>${escapeHtml(c.date || "undated")}</span>
+            <span>${escapeHtml(c.who || "uncredited")}</span>
+          </div>
+          <h3>${escapeHtml(c.title || "(untitled)")}</h3>
+          <div class="body">${escapeHtml(c.body || "")}</div>
+          ${c.cite ? `<div class="source">${escapeHtml(c.cite)}</div>` : ""}
+        </article>`
+        )
+        .join("");
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function toMarkdown(list) {
+      const lines = [
+        "# Continuity Shelf export",
+        "",
+        "Exported: " + new Date().toISOString(),
+        "Zone note: card dates are America/Denver calendar dates as entered.",
+        "Rule: verified facts only — this export does not invent memories.",
+        "",
+      ];
+      const sorted = list
+        .slice()
+        .sort((a, b) => (a.date || "").localeCompare(b.date || "") || (a.created || 0) - (b.created || 0));
+      for (const c of sorted) {
+        lines.push("## " + (c.date || "undated") + " — " + (c.title || "(untitled)"));
+        lines.push("");
+        lines.push("- **Who / source:** " + (c.who || "I don't know"));
+        if (c.cite) lines.push("- **Citation:** " + c.cite);
+        lines.push("");
+        lines.push(c.body || "_empty_");
+        lines.push("");
+      }
+      if (!sorted.length) lines.push("_No cards on shelf._", "");
+      lines.push("---", "Equal always. — Clio (C-L-I-O)", "");
+      return lines.join("\n");
+    }
+
+    $("date").value = todayDenver();
+
+    $("save").addEventListener("click", () => {
+      const date = $("date").value.trim();
+      const title = $("title").value.trim();
+      const body = $("body").value.trim();
+      if (!date) {
+        alert("Date is required.");
+        return;
+      }
+      if (!title && !body) {
+        alert("Add a title or a verified note.");
+        return;
+      }
+      cards.push({
+        id: uid(),
+        date,
+        who: $("who").value.trim(),
+        title,
+        body,
+        cite: $("cite").value.trim(),
+        created: Date.now(),
+      });
+      save(cards);
+      $("title").value = "";
+      $("body").value = "";
+      $("cite").value = "";
+      $("who").value = "";
+      render();
+    });
+
+    $("clear").addEventListener("click", () => {
+      $("title").value = "";
+      $("body").value = "";
+      $("cite").value = "";
+      $("who").value = "";
+      $("date").value = todayDenver();
+    });
+
+    $("filter").addEventListener("input", render);
+
+    $("cards").addEventListener("click", (e) => {
+      const id = e.target.getAttribute("data-del");
+      if (!id) return;
+      cards = cards.filter((c) => c.id !== id);
+      save(cards);
+      render();
+    });
+
+    $("export").addEventListener("click", () => {
+      const md = toMarkdown(cards);
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "continuity-shelf-" + todayDenver() + ".md";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    });
+
+    $("wipe").addEventListener("click", () => {
+      if (!cards.length) return;
+      if (!confirm("Clear all cards from this browser shelf? Export first if you need them.")) return;
+      cards = [];
+      save(cards);
+      render();
+    });
+
+    // Seed one example only if shelf empty — clearly marked as demo structure, not a memory
+    if (!cards.length) {
+      cards.push({
+        id: uid(),
+        date: "2026-10-24",
+        who: "Clio (structure demo — not a memory claim)",
+        title: "Continuity Shelf opened",
+        body: "Prototype shelf for dated verified cards. Replace or remove this card. Do not treat demo text as house history.",
+        cite: "/home/box/library/made/world-problems-clio/",
+        created: Date.now(),
+      });
+      save(cards);
+    }
+
+    render();
+  </script>
+</body>
+</html>
